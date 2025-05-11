@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Список пользователей</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .form-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input[type="text"],
+        input[type="email"],
+        input[type="tel"],
+        textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+            background-color: #f9f9f9;
+        }
+        input:disabled, textarea:disabled {
+            background-color: transparent;
+            border: none;
+            padding: 8px 0;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .avatar-upload {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        .avatar-preview {
+            width: 150px;
+            height: 150px;
+            border: 1px dashed #ccc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        .edit-mode {
+            border: 1px solid #ddd;
+            padding: 8px;
+            background-color: white;
+        }
+        .hidden {
+            display: none;
+        }
+        
+        /* Стили для таблицы пользователей */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+        .avatar-cell img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        
+        /* Стили для пагинации */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .pagination a {
+            color: #4CAF50;
+            text-decoration: none;
+            padding: 8px 16px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .pagination a:hover {
+            background-color: #f2f2f2;
+        }
+        .pagination span {
+            padding: 8px 16px;
+        }
+        
+        /* Стили для поиска */
+        .search-form {
+            margin: 20px 0;
+            display: flex;
+            gap: 10px;
+        }
+        .search-form input[type="text"] {
+            flex: 1;
+            max-width: 400px;
+            padding: 10px;
+        }
+        .search-form button {
+            padding: 10px 20px;
+        }
+        
+        /* Ссылка назад */
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            color: #4CAF50;
+            text-decoration: none;
+        }
+        .back-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+    <form action="/users/{{id}}" type="GET">
+        <div class="form-group">
+            <input type="hidden" name="id" value="{{id}}">
+            <button type="submit">Мой профиль</button>
+        </div>
+    </form>
+    <h1>Зарегистрированные пользователи</h1>
+    <div class="form-section">
+        <table>
+            <thead>
+                <tr>
+                    <th>Email</th>
+                    <th>Телефон</th>
+                    <th>О себе</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{#each users}}
+                <tr>
+                    <td>{{this.email}}</td>
+                    <td>{{this.phone}}</td>
+                    <td>{{this.aboutMe}}</td>
+                </tr>
+                {{/each}}
+            </tbody>
+        </table>
+    </div>
+
+
+    <!-- Ссылка назад -->
+     
+</body>
+</html>

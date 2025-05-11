@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Профиль пользователя</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .form-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input[type="text"],
+        input[type="email"],
+        input[type="tel"],
+        textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+            background-color: #f9f9f9;
+        }
+        input:disabled, textarea:disabled {
+            background-color: transparent;
+            border: none;
+            padding: 8px 0;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .avatar-upload {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        .avatar-preview {
+            width: 150px;
+            height: 150px;
+            border: 1px dashed #ccc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        .edit-mode {
+            border: 1px solid #ddd;
+            padding: 8px;
+            background-color: white;
+        }
+        .hidden{
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <h1>Личный кабинет</h1>
+    
+    <form id="profileForm" enctype="multipart/form-data">
+        <!-- Секция аватара -->
+        {{!-- <div class="form-section">
+            <h2>Аватар профиля</h2>
+            <div class="form-group avatar-upload">
+                <div class="avatar-preview" id="avatarPreview">
+                    {{#if photo}}
+                        <img src="{{photo}}" alt="Фото профиля" style="max-width:100%; max-height:100%;">
+                    {{else}}
+                        <span>Аватар не загружен</span>
+                    {{/if}}
+                </div>
+                <div>
+                    <label for="avatar">Загрузите фото:</label>
+                    <input type="file" id="avatar" name="avatar" accept="image/*" disabled>
+                </div>
+            </div>
+        </div> --}}
+
+        <input type="hidden" name="id" value="{{user._id}}">
+        <!-- Секция основной информации -->
+        <div class="form-section">
+            <h2>Основная информация</h2>
+            <div class="form-group">
+                <label for="login">Логин:</label>
+                <input type="text" id="login" name="login" value="{{user.login}}" disabled>
+            </div>
+            
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" value="{{user.email}}" disabled>
+            </div>
+            
+            <div class="form-group">
+                <label for="phone">Телефон:</label>
+                <input type="tel" id="phone" name="phone" value="{{user.phone}}" placeholder="+7 (XXX) XXX-XX-XX" disabled>
+            </div>
+        </div>
+
+        <!-- Секция "О себе" -->
+        <div class="form-section">
+            <h2>О себе</h2>
+            <div class="form-group">
+                <label for="aboutMe">Расскажите о себе:</label>
+                <textarea id="aboutMe" name="aboutMe" rows="5" disabled>{{#if user.aboutMe}}{{user.aboutMe}}{{else}}Пользователь не добавил описание.{{/if}}</textarea>
+            </div>
+        </div>
+
+        <!-- Кнопка отправки -->
+        <div class="form-group">
+            <button type="button" id="toggleEditBtn">Изменить профиль</button>
+        </div>
+        
+    </form>
+
+     <form action="/users/showcase" type="GET">
+        <div class="form-group">
+            <input type="hidden" name="id" value="{{user._id}}">
+            <button type="submit">Витрина пользователей</button>
+        </div>
+    </form>
+
+    <form action="/auth/logout" type="POST">
+        <div class="form-group">
+            <button type="submit">Выйти</button>
+        </div>
+    </form>
+
+    <script>
+        const toggleEditBtn = document.getElementById('toggleEditBtn');
+        const form = document.getElementById('profileForm');
+        const inputs = form.querySelectorAll('input, textarea');
+        {{!-- const fileInput = document.getElementById('avatar'); --}}
+        {{!-- const avatarPreview = document.getElementById('avatarPreview'); --}}
+        
+        let isEditMode = false;
+
+
+        // Переключение режима редактирования
+        toggleEditBtn.addEventListener('click', function() {
+            isEditMode = !isEditMode;
+            
+            if (isEditMode) {
+                // Включаем режим редактирования
+                toggleEditBtn.textContent = 'Сохранить';
+                toggleEditBtn.style.backgroundColor = '#2196F3';
+                
+                inputs.forEach(input => {
+                    input.disabled = false;
+                    if (input.type !== 'file') {
+                        input.classList.add('edit-mode');
+                    }
+                });
+            } else {
+                // Отключаем режим редактирования и сохраняем данные
+                toggleEditBtn.textContent = 'Изменить профиль';
+                toggleEditBtn.style.backgroundColor = '#4CAF50';
+                
+                const resFlag = saveProfile();
+
+                if(resFlag){
+                    inputs.forEach(input => {
+                        input.disabled = true;
+                        input.classList.remove('edit-mode');
+                    });
+                }
+            }
+        });
+
+        // Предпросмотр аватара
+        {{!-- fileInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            
+            if (file) {
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    avatarPreview.innerHTML = '';
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.style.maxWidth = '100%';
+                    img.style.maxHeight = '100%';
+                    avatarPreview.appendChild(img);
+                }
+                
+                reader.readAsDataURL(file);
+            }
+        }); --}}
+
+        // Функция сохранения профиля
+        function saveProfile() {
+            const formData = new FormData(form);
+
+            console.log(formData);
+            fetch(`/users/editProfile/${formData.get('id')}`, {
+                method: 'PATCH',
+                body: formData
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Ошибка сохранения профиля');
+                }
+            })
+            .catch(error => {
+                console.error('Ошибка:', error);
+                alert('Произошла ошибка при сохранении профиля');
+                return false;
+            });
+            return true;
+        }
+    </script>
+</body>
+</html>

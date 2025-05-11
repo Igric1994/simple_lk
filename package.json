@@ -1,0 +1,27 @@
+{
+  "name": "simple_lk",
+  "version": "1.0.0",
+  "description": " Веб приложение простого личного кабинета.",
+  "main": "./src/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node ./src/index.js",
+    "dev": "npx nodemon ./src/index.js"
+  },
+  "author": "Igor Kadykov",
+  "license": "ISC",
+  "dependencies": {
+    "bcryptjs": "^3.0.2",
+    "connect-redis": "^7.1.0",
+    "dotenv": "^16.5.0",
+    "express": "^5.1.0",
+    "express-session": "^1.18.1",
+    "hbs": "^4.2.0",
+    "mongoose": "^8.14.2",
+    "multer": "^1.4.5-lts.2",
+    "redis": "^5.0.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.10"
+  }
+}

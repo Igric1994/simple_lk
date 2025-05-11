@@ -1,0 +1,52 @@
+version: '3.8'
+services:
+  app:
+    build: .
+    ports:
+      - "3000:3000" 
+    # depends_on:
+    #   redis:
+    #     condition: service_healthy
+    networks:
+      - app-network
+    environment:
+      # - REDIS_HOST=redis
+      - MONGO_HOST=mongo 
+      - SESSION_SECRET=5ae1139db127a6b4051e591c7fb5d880267f9933fb1a5d1b06bfd997ca9819d8ac9b150b467f41c9e82aba494eebf94583f4c4eab39cad04769b80d68833b18e
+      # - NODE_OPTIONS=--max-old-space-size=512
+    volumes:
+      - ./logs:/app/logs  
+      - ./uploads/avatars:/app/uploads/avatars
+    restart: unless-stopped
+
+  mongo:
+    image: mongo:latest
+    container_name: my-mongo
+    restart: unless-stopped
+    networks:
+      - app-network
+    ports:
+      - "27017:27017"
+    volumes:
+      - ./data/db:/data/db  # Папка data/db в проекте → /data/db в контейнере
+  # redis:
+  #     image: redis:7.0-alpine  # Используем последнюю версию
+  #     container_name: redis
+  #     hostname: redis
+  #     ports:
+  #       - "6379:6379"
+  #     volumes:
+  #       - redis_data:/data
+  #     networks:
+  #       - app-network
+  #     healthcheck:
+  #       test: ["CMD-SHELL", "redis-cli ping | grep PONG"]
+  #       interval: 5s
+  #       timeout: 3s
+  #       retries: 10
+  #       start_period: 10s
+  #     restart: unless-stopped
+
+networks:
+  app-network:
+    driver: bridge
