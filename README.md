@@ -5,5 +5,7 @@
 
 Перед следующим шагом следует установить докер
 
+```https://www.docker.com/products/docker-desktop/```
+
 Если под виндовс, то открываем в папке проекта(куда git clone сделали) PowerShell и пишем
 ```docker-compose up -d --build```
