@@ -1,4 +1,3 @@
-.dockerignore
 package-lock.json
 data/
 logs/
