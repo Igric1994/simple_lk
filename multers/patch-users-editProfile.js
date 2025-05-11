@@ -1,29 +1,30 @@
+// utils/upload.js
 const multer = require('multer');
 const path = require('path');
-const fs = require('fs');
-const uploadDir = 'uploads/avatars';
-const User = require('../models/user');
 
-// Проверяем и создаем папку, если ее нет
-if (!fs.existsSync(uploadDir)) {
-    fs.mkdirSync(uploadDir, { recursive: true });
-}
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'public/uploads/'); // Папка для сохранения
+  },
+  filename: (req, file, cb) => {
+    const id = req.params["id"];
+    if(!id) return cb(new Error('Отсутсвует id'));
+    const newName = id + file.originalname;
+    cb(null, id + file.originalname); // Генерируем уникальное имя
+  }
+});
 
-const storeConf = multer.diskStorage({
-    destination: (req, file, cb) =>{
-        cb(null, "./uploads/avatars");
-    },
-    filename: async(req, file, cb) =>{
-        console.log("multer");
-        const id = req.params['id'];
-        console.log(id)
-        const fileName = id + file.originalname;
-        const user = await User.findOneAndUpdate({_id : id}, {avatarName : fileName}, {new:true});
-        console.log(user);
-        if(id) {
-            cb(null, fileName);
-        }
+const upload = multer({ 
+  storage: storage,
+  limits: { fileSize: 5 * 1024 * 1024 }, // Лимит 5 МБ
+  fileFilter: (req, file, cb) => {
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+    if (allowedTypes.includes(file.mimetype)) {
+      cb(null, true);
+    } else {
+      cb(new Error('Только JPG, PNG или GIF!'));
     }
-})
+  }
+});
 
-module.exports = multer({storage:storeConf}).single('avatar');
+module.exports = upload;

@@ -5,6 +5,7 @@ const session = require('express-session');
 const userRouter = require("./routes/userRouter.js");
 const authRouter = require("./routes/authRouter.js");
 require('dotenv').config();
+const path = require('path');
 // const redis = require('redis');
 // const RedisStore = require('connect-redis').default;
 
@@ -67,17 +68,15 @@ app.use(express.json());
 
 app.use("/users", userRouter);
 app.use("/auth", authRouter);
-app.use(express.static('uploads/avatar')); 
+app.use(express.static(path.join(__dirname, 'public')));
 
 
 app.use('/', (req, res) => res.redirect('/auth/'));
 
-app.use(function (req, res, next) {
-    console.log("bad request");
-    res.status(404).send("Not Found");
-});
-
-
+// app.use(function (req, res, next) {
+//     console.log("bad request");
+//     res.status(404).send("Not Found");
+// });
 
 // exports.requireAuth = (req, res, next) => {
 //     if (!req.session.user) {

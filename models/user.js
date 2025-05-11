@@ -9,7 +9,7 @@ const userScheme = new Schema({
     aboutMe: String,
     login: String,
     pass: String,
-    avatarName: String
+    avatar: String
 });
 
 module.exports = mongoose.model("User", userScheme);

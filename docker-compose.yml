@@ -15,8 +15,7 @@ services:
       - SESSION_SECRET=5ae1139db127a6b4051e591c7fb5d880267f9933fb1a5d1b06bfd997ca9819d8ac9b150b467f41c9e82aba494eebf94583f4c4eab39cad04769b80d68833b18e
       # - NODE_OPTIONS=--max-old-space-size=512
     volumes:
-      - ./logs:/app/logs  
-      - ./uploads/avatars:/app/uploads/avatars
+      - ./public/uploads:/app/public/uploads
     restart: unless-stopped
 
   mongo:

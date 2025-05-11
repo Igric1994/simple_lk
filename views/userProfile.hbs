@@ -79,10 +79,9 @@
 </head>
 <body>
     <h1>Личный кабинет</h1>
-    
-    <form id="profileForm" enctype="multipart/form-data">
-        <!-- Секция аватара -->
-        {{!-- <div class="form-section">
+
+    <form id="photoForm" enctype="multipart/form-data">
+        <div class="form-section">
             <h2>Аватар профиля</h2>
             <div class="form-group avatar-upload">
                 <div class="avatar-preview" id="avatarPreview">
@@ -94,11 +93,18 @@
                 </div>
                 <div>
                     <label for="avatar">Загрузите фото:</label>
-                    <input type="file" id="avatar" name="avatar" accept="image/*" disabled>
+                    <input type="file" id="avatar" name="photo" accept="image/*" title="Загрузить фото" disabled>
                 </div>
             </div>
-        </div> --}}
+        </div> 
+        <div class="form-group">
+            <input type="hidden" name="id" value="{{user._id}}">
+            <button type="button" id="photoBtn">Изменить фото</button>
+        </div>
 
+    </form>
+    
+    <form id="profileForm">
         <input type="hidden" name="id" value="{{user._id}}">
         <!-- Секция основной информации -->
         <div class="form-section">
@@ -150,13 +156,64 @@
 
     <script>
         const toggleEditBtn = document.getElementById('toggleEditBtn');
+        const photoBtn = document.getElementById('photoBtn');
         const form = document.getElementById('profileForm');
         const inputs = form.querySelectorAll('input, textarea');
-        {{!-- const fileInput = document.getElementById('avatar'); --}}
-        {{!-- const avatarPreview = document.getElementById('avatarPreview'); --}}
-        
-        let isEditMode = false;
+        const fileInput = document.getElementById('avatar');
+        const avatarPreview = document.getElementById('avatarPreview');
+        const photoForm = document.getElementById('photoForm');
+        const inputsPhoto = photoForm.querySelectorAll('input');
 
+        let isEditMode = false;
+        let isEditModePhoto = false;
+
+        photoBtn.addEventListener('click', function() {
+            isEditModePhoto = !isEditModePhoto;
+
+            if (isEditModePhoto) {
+                // Включаем режим редактирования
+                photoBtn.textContent = 'Сохранить';
+                photoBtn.style.backgroundColor = '#2196F3';
+                
+
+                inputsPhoto.forEach(input => {
+                    input.disabled = false;
+                });
+            } else {
+                // Отключаем режим редактирования и сохраняем данные
+                photoBtn.textContent = 'Изменить фото';
+                photoBtn.style.backgroundColor = '#4CAF50';
+                const resFlag = savePhoto();
+
+                if(resFlag){
+                    inputsPhoto.forEach(input => {
+                        input.disabled = true;
+                        input.classList.remove('edit-mode');
+                    });
+                }
+            }
+        })
+
+        function savePhoto(){
+            const formData = new FormData(photoForm);
+
+            console.log(formData);
+            fetch(`/users/savePhoto/${formData.get('id')}`, {
+                method: 'PATCH',
+                body: formData
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Ошибка сохранения профиля');
+                }
+            })
+            .catch(error => {
+                console.error('Ошибка:', error);
+                alert('Произошла ошибка при сохранении профиля');
+                return false;
+            });
+            return true;
+        }
 
         // Переключение режима редактирования
         toggleEditBtn.addEventListener('click', function() {
@@ -190,7 +247,7 @@
         });
 
         // Предпросмотр аватара
-        {{!-- fileInput.addEventListener('change', function(e) {
+        fileInput.addEventListener('change', function(e) {
             const file = e.target.files[0];
             
             if (file) {
@@ -207,7 +264,7 @@
                 
                 reader.readAsDataURL(file);
             }
-        }); --}}
+        });
 
         // Функция сохранения профиля
         function saveProfile() {
