@@ -3,3 +3,7 @@ data/
 logs/
 node_modules/
 public/
+.git
+.vscode
+*.log
+.env
