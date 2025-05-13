@@ -6,4 +6,3 @@ public/
 .git
 .vscode
 *.log
-.env
